@@ -8,6 +8,8 @@
         - 2-1-1 [Conceitos Node.js](#2-1-1)
         - 2-1-2 [Conceitos API REST](#2-1-2)
         - 2-1-3 [HTTP Codes](#2-1-3)
+        - 2-1-4 [Criando projeto Node](#2-1-4)
+
     - 2-2 - [...](#2-2)
     - 2-3 - [...](#2-3)
     - 2-4 - [...](#2-4)
@@ -143,6 +145,107 @@ POST http://api.com/*company*/**1**/*users*
 
 - **5xx** - Erros do Servidor;
     - **500** - INTERNAL SERVER ERROR;
+
+
+[Voltar para o índice](#i)
+
+****
+
+## <a name="#2-1-4">Criando projeto Node</a>
+
+```console
+yarn init -y
+```
+
+### Express
+
+É um conjunto de ferramentas para trabalhar com rotas.
+
+```console
+yarn add express
+```
+> Um servidor HTTP consegue ouvir requisições e retornar respostas.
+
+### Métodos HTTP
+
+- **GET** - Buscar informações do back-end
+- **POST** - Criar uma informação no back-end
+- **PUT/PATCH** - Alterar uma informação no back-end(PATCH = Especifico)
+- **DELETE** - - Deletar uma informação no back-end
+
+```js
+app.get('/projects', (req, res) => {
+    return res.json([
+        'Projeto 1',
+        'Projeto 2'
+    ]);
+});
+
+// Mesmo recurso 'projects'
+app.post('/projects', (req, res) => {
+    return res.json([
+        'Projeto 1',
+        'Projeto 2',
+        'Projeto 3'
+    ]);
+});
+
+// Utilizado um id
+app.put('/projects/:id', (req, res) => {
+    return res.json([
+        'Projeto 1',
+        'Projeto 2',
+        'Projeto 3'
+    ]);
+});
+
+// Também utiliza um id
+app.delete('/projects/:id', (req, res) => {
+    return res.json([
+        'Projeto 2',
+        'Projeto 3'
+    ]);
+});
+```
+
+### Tipos de parâmetros
+
+São formas do front-end enviar algum tipo de informação.
+
+## **Query Params** - Filtros e paginação.
+> /projects?title=React&dev=Fabio
+
+```js
+const query = req.query;
+```
+**Desestruturando**:
+```js
+const { title, dev } = req.query
+```
+
+## **Route Params** - Identificar recursos (Atualizar/Deletar)
+
+> /projects/:id
+```js
+const params = req.params;
+```
+**Desestruturando**
+```js
+const { id } = req.params;
+```
+
+## **Request Body** - Conteúdo na hora de criar ou editar um recurso
+> Vem através de JSON
+
+```js
+const body = req.body;
+```
+Por padrão o express não interpreta JSON, é preciso configurar isso.
+```js
+app.use(express.json());
+```
+> É necessário que isso venha antes das rotas
+
 
 
 [Voltar para o índice](#i)
