@@ -9,6 +9,8 @@
         - 2-1-2 [Conceitos API REST](#2-1-2)
         - 2-1-3 [HTTP Codes](#2-1-3)
         - 2-1-4 [Criando projeto Node](#2-1-4)
+        - 2-1-5 [Aplicação Funcional](#2-1-5)
+        - 2-1-6 [Middlewares](#2-1-6)
 
     - 2-2 - [...](#2-2)
     - 2-3 - [...](#2-3)
@@ -246,7 +248,132 @@ app.use(express.json());
 ```
 > É necessário que isso venha antes das rotas
 
+## <a name="2-1-5">Aplicação Funcional</a>
 
+Usaremos **uuidv4** para criar um id universal:
+
+```console
+yarn install uuidv4
+```
+importamos e utilizamos no POST:
+```js
+const { uuid } = require('uuidv4');
+const projects = [];
+...
+app.post('/projects', (req, res) => {
+
+    const { title, owner } = req.body;
+    const project = { id: uuid(), title, owner };
+
+    // Enviamos para o array de projetos    
+    projects.push(project);
+
+    return res.json(project);
+});
+```
+ 
+ **PUT:**
+```js
+app.put('/projects/:id', (req, res) => {
+    const { id } = req.params;
+    const { title, owner } = req.body;
+    
+    // Verificando se o projeto existe
+    const projectIndex = projects.findIndex(project => project.id === id);
+
+    if (projectIndex < 0) {
+        return res.status(400).json({ error: 'Project not found' });
+
+    }
+
+    // Objeto com novas informações
+    const project = {
+        id,
+        title,
+        owner,
+    }
+
+    // Substituindo
+    projects[projectIndex] = project;
+
+    return res.json(project);
+});
+```
+
+**DELETE**
+```js
+app.delete('/projects/:id', (req, res) => {
+    const { id } = req.params;
+
+    // Verificando se o projeto existe
+    const projectIndex = projects.findIndex(project => project.id === id);
+
+    if (projectIndex < 0) {
+        return res.status(400).json({ error: 'Project not found' });
+    }
+
+    // Removendo
+    projects.splice(projectIndex, 1);
+    
+    return res.status(204).send();
+});
+```
+****
+## <a name="2-1-6">Middlewares</a>
+
+É um **interceptador** de requisições e pode:
+
+- Interromper totalmente a requisição;
+- Alterar dados da requisição;
+
+```js
+function logRequests(req, res, next) {
+    const { method, url } = req;
+
+    const logLabel = `[${method.toUpperCase()}] ${url}`
+
+    console.log(logLabel);
+}
+
+app.use(logRequests); // Aplica em todas as rotas
+```
+>Interrompe totalmente a requisição, pois não foi utilizado o next
+
+```js
+return next(); // Próximo middleware
+```
+
+Caso você queira utilizar apenas em uma rota:
+```js
+app.get('/projects', logRequests,(req, res) => {
+```
+> Você também pode utilizar quantos middlewares quiser, adicionando em sequência
+
+Middlewares são bem utilizados para validações, para verificar se os dados mandados estão no formato correto:
+
+```js
+const { uuid, isUuid } = require('uuidv4');
+...
+function validadeProjectId(req, res, next) {
+    const { id } = req.params;
+    
+    if(!isUuid(id)) {
+        return res.status(400).json({ erro: 'Invalid project ID.' })
+    }
+    
+    return next();
+}
+...
+app.put('/projects/:id', validadeProjectId, (req, res) => {
+    ...
+}
+```
+
+E por ultimo a ultima forma de usar Middlewares:
+```js
+app.use('/projects/:id', validadeProjectId);
+```
+>Todas as rotas com o recurso acima passará por esse middleware.
 
 [Voltar para o índice](#i)
 
