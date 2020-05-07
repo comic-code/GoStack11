@@ -12,9 +12,14 @@
         - 2-1-5 [Aplicação Funcional](#2-1-5)
         - 2-1-6 [Middlewares](#2-1-6)
 
-    - 2-2 - [...](#2-2)
-    - 2-3 - [...](#2-3)
-    - 2-4 - [...](#2-4)
+    - 2-2 - [React](#2-2)
+        - 2-2-1 [Conceitos React](#2-2-1)
+        - 2-2-2 [Configurando Projeto React do zero](#2-2-2)
+        - 2-2-3 [Componentização](#2-2-3)
+        - 2-2-4 [Propriedades](#2-2-4)
+
+    - 2-3 - [React Native](#2-3)
+    - 2-4 - [TypeScript](#2-4)
 
 ****
 # <a name="2">Fase 2</a>
@@ -96,7 +101,7 @@
 }
 ```
 
-### **COnteúdo da requisiçãp**
+### **Conteúdo da requisição**
 
 GET http://api.com/*company*/**1**/*users* **?page=2**
 
@@ -376,5 +381,193 @@ app.use('/projects/:id', validadeProjectId);
 >Todas as rotas com o recurso acima passará por esse middleware.
 
 [Voltar para o índice](#i)
+
+****
+
+# <a name="2-2-1">O que é React?</a>
+
+- Biblioteca para construção de interfaces;
+- Utilizado para construção de Single-Page Applications;
+- Todo ecosistema é sim um framework;
+- Tudo fica dentro do JavaScript;
+****
+- **React** - Se refere a biblioteca de construção de interfaces, que é utilizada tanto no RJS quanto no RN.
+- **ReactJS** - Se refere ao comportamento do React no Browser;
+- **React Native** -  Soma do React com outra biblioteca que lida com elementos nativos;
+
+## Vantagens:
+
+- Organização do código;
+    - Componentização - Dividir partes do códigos em componentes qu etem funcionalidades especificas;
+- Divisão de responsabilidades;
+    - Back-end: Regra de negócio;
+    - Front-end: Inteface;
+- Uma API, múltiplos clientes;
+- Programação declarativa;
+
+## JSX
+JavaScript com XML:
+
+- Escrever HTML dentro do JavaScript;
+- Com React podemos criar nossos próprios elementos;
+
+## Babel / Webpack
+
+- Browser não entende esse código;
+- O Babel converte nosso código JS de uma forma que o browser entenda;
+****
+- Webpack possui várias funções:
+    - Criação do bundle, arquivo com todo código da aplicação;
+    - Ensina ao JavaScript como importar arquivos CSS, imagens e etc;
+    - Live reaload com Webpack Dev Server;
+
+****
+
+# <a name="2-2-2">Configurando projeto Reactjs do zero</a>
+
+## Configurando Babel
+
+```console
+yarn add react react-dom
+```
+>React-dom é o react para web.
+
+- Babel - Transpilar (converter) código do React para um código que o browser entenda.
+- Webpack - Para cada tipo de arquivo (.js .css .png) será convertido o código de maneira diferente.
+****
+- Loaders - Babel-loader, CSS-loader, Image-loader, etc;
+
+```console
+yarn add @babel/core @babel/preset-env @babel/preset-react webpack webpack-cli
+```  
+
+Na raiz do projeto será criado um arquivo chamado **babel.config.js**:
+
+```js
+module.exports = {
+    presets: [
+        '@babel/preset-env',   //Converte o código de um JS modero para um JS mais antigo, caso necessário;
+        '@babel/preset-react'  //Adiciona funcionalidades do React nessa conversão
+    ]
+}
+```
+> Essa configuração é padrão e pode ser utilizada em todo projeto React;
+****
+
+```console
+yarn add @babel/cli
+```
+> É uma interface de terminal para "converter" JS moderno
+
+## Configurando Webpack
+
+Em **webpack.config.js** será configurando o primeiro arquivo da aplicação e alguns loaders
+
+
+
+```js
+const path = require('path'); // Para não ter conflito de caminho (windows usa a barra invertida por exemplo)
+
+module.exports = {
+    entry: path.resolve(__dirname, 'src', 'index.js'),
+    output: {
+        path: path.resolve(__dirname, 'public'),
+        filename: 'bundle.js'
+    },
+    module: {
+        rules: [ // Cada um desses objetos represeta um loader diferente
+            {
+                test: /\.js$/,
+                exclude: /node_modules/, //Não passará pelo processo do Babel
+                use: {
+                    loader: 'babel-loader'
+                }
+            }
+        ]
+    }
+}
+```
+> Em resumo: Sempre que for precisar de um arquivo js, que não estiver na pasta node_modules, será transpilado pelo babel-loader.
+
+```console
+yarn add babel-loader
+```
+
+
+```console
+yarn add webpack-dev-server -D
+```
+
+```js
+...
+devServer: {
+    contentBase: path.resolve(__dirname, 'public')
+},
+...
+```
+Diz para o webpack onde está localidado os arquivos públicos da aplicação
+
+```console
+yarn webpack-dev-server --mode development
+```
+> Deixa a aplicação rodando e atualiza automaticamente
+
+****
+
+## <a name="2-2-3">Componentização</a>
+
+É dividir pedaços da aplicação em componentes, botões, cabeçalhos etc, que conseguem ser aproveitados diversas vezes.
+
+**JSX** - HTML dentro do JavaScript:
+
+```js
+import React from 'react';
+import { render } from 'react-dom';
+
+render(<h1>Hello Friend!</h1>, document.getElementById('app'));
+```
+****
+
+Arquivos JS que contenham componentes tem a letra maiúscula.
+
+App.js:
+```js
+import React from 'react';
+
+function App() {
+    return <h1>Hello World</h1>
+}
+
+export default App;
+```
+
+index.js:
+```js
+import React from 'react';
+import { render } from 'react-dom';
+
+import App from './App';
+
+render(<App />, document.getElementById('app'));
+```
+
+### Sempre que tiver código JSX será necessário importar o React
+
+### No React não é possível ter um elemento abaixo do outro sem que exista algo ao redor:
+
+Conceito de fragment é basicamente um element HTML sem nada, para que não interfira na DOM:
+
+```js
+<>
+    <Header />   
+    <Header />
+</>
+```
+
+****
+
+## <a name="2-2-4">Propriedades</a>
+
+[Volte ao indice](#indice)
 
 ****
