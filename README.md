@@ -17,6 +17,10 @@
         - 2-2-2 [Configurando Projeto React do zero](#2-2-2)
         - 2-2-3 [Componentização](#2-2-3)
         - 2-2-4 [Propriedades](#2-2-4)
+        - 2-2-5 [Estado e Imutabilidade](#2-2-5)
+        - 2-2-6 [Importando CSS e Imagens](#2-2-6)
+        - 2-2-7 [Listando projetos da API](#2-2-7)
+        - 2-2-8 [Cadastrando projetos](#2-2-8)
 
     - 2-3 - [React Native](#2-3)
     - 2-4 - [TypeScript](#2-4)
@@ -567,6 +571,284 @@ Conceito de fragment é basicamente um element HTML sem nada, para que não inte
 ****
 
 ## <a name="2-2-4">Propriedades</a>
+
+É alguma informação que podemos passar de um componente pai para um componente filho.
+> Tanto faz o nome da propriedade
+
+```js
+<Header title="Homepage" />   
+<Header title="Projects" />
+```
+
+```js
+export default function Header(props) {
+    return (
+        <header>
+            <h1>{props.title}</h1>
+        </header>
+    );
+}
+```
+Repare em *props* que foi utilizado para recuperar a propriedade title.
+> Sempre que precisamos usar JS novamtente dentro do HTML basta utilizar chaves
+
+Também é possível fazer um ***Desestruturação*** do código:
+
+```js
+export default function Header({ title }) {
+    return (
+        <header>
+            <h1>{title}</h1>
+        </header>
+    );
+}
+```
+
+### A propriedade **children**:
+
+```js
+return (
+    <>
+        <Header title="Homepage">
+            <ul>
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+            </ul>
+        </Header>
+           
+        <Header title="Projects">
+            <ul>
+                <li>3</li>
+                <li>2</li>
+                <li>1</li>
+            </ul>
+        </Header>
+    </>
+)
+```
+****
+```js
+export default function Header({ title, children }) {
+    return (
+        <header>
+            <h1>{title}</h1>
+            {children}
+        </header>
+    );
+}
+```
+> Sempre que usar o children será acessado o conteúdo dentro do componente.
+
+## <a name="2-2-5">Estado e Imutabilidade</a>
+
+
+*.map()* - Percorre todo o objeto e retorna alguma coisa.
+```js
+<ul>
+    {projects.map(project => <li key={project}>{project}</li>)}
+</ul>
+```
+
+Quando fazemos uma interação no React, percorrendo uma array por exemplo e mostrando os itens em tela, o React precisa que você identifique no **elemento maior nível** uma propriedade chamada ***key***, no nosso caso usaremos o próprio título do projeto, por enquanto.
+****
+
+### **Estado**
+
+```js
+import React, { useState } from 'react';
+```
+
+useState retorna um array com 2 posiçoes:
+
+- 1 - A variável com o seu valor inicial;
+- 2 - Função para atualizarmos esse valor;
+
+```js
+const [projects, setProjects] = useState(['Desenvolvimento de app', 'Front-end web']);
+```
+
+### **Imutabilidade**
+
+Precisamos sempre recriar a informação com as alterações que queremos.
+
+```js
+function handleAddProject() {
+    //projects.push(`Novo projeto ${Date.now()}`)
+    
+    // Percorre todo array e copia
+    setProjects([...projects, `Novo projeto ${Date.now()}`])
+
+    console.log(projects);
+}
+```
+
+****
+
+## <a name="2-2-6">Importando CSS e imagens</a>
+
+```console
+yarn add style-loader css-loader
+```
+
+Será necessário criar uma nova regra para um loader no webpack.config.js:
+```js
+{
+    test: /\.css$/,
+    use: [
+        { loader: 'style-loader' },
+        { loader: 'css-loader' },
+    ]
+}
+```
+
+Por que utilizar 2 loaders?
+
+- **css-loader** - Irá ler o arquivo css e interpretar suas importações (imagens, etc)
+- **style-loader** - Injeta o css no html
+
+Para importar o arquivos css:
+```js
+import './App.css';
+```
+
+****
+
+```console
+yarn add file-loader
+```
+O file loader será utilizado por carregar arquivos para nossa aplicação.
+
+Criando a regra no webpack.config.js:
+
+```js
+{
+    test: /.*\.(gif|png|jpe?g)$/i,
+}
+```
+O **i** vem insensitive
+
+>Vale lembrar que toda configuração feita no webpack.config.js será necessário um reset no servidor.
+
+Importando e chamando a imagem:
+```js
+import backgroundImage from './assets/bc.jpg';
+...
+<img src={backgroundImage} width={500} />
+```
+## <a name="2-2-7">Listando projetos da API</a>
+
+```console
+yarn add axios
+```
+
+O axios será responsável por chamadas de API, por conectar o front-end com o back-end.
+```js
+import axios from 'axios';
+
+const api = axios.create({
+    baseURL: "http://localhost:3333"
+});
+
+export default api;
+```
+Exportando:
+```js
+import api from './services/api';
+```
+
+### useEffect
+
+Usaremos sempre que uma informação for **alterada** ou apenas para disparar funções quando o componente for exibido em tela.
+
+```js
+import React, { useState, useEffect } from 'react';
+...
+useEffect(() => {
+    api.get('projects').then(res => {
+        console.log(res);
+    });
+}, []);
+```
+> Vale lembrar que async await não funciona no useEffect
+
+### CORS
+
+Toda vez que o front-end vai se conectar com o back-end, temos algumas técnicas de segurança para evitar que front-ends não autorizados se conectem com o mesmo para obter esses dados, então no back-end:
+
+```console
+yarn add cors
+```
+
+Importando e utilizando:
+```js
+const cors = require('cors');
+app.use(cors()); // Irá permitir que qualquer front-end se conecte ao nosso front-end
+```
+
+### De volta ao front-end
+```js
+const [projects, setProjects] = useState([ ]);
+useEffect(() => {
+    api.get('projects').then(res => {
+        setProjects(res.data);
+    });
+}, []);
+
+...
+<ul>
+    {projects.map(project => <li key={project.id}>{project.title}</li>)}
+</ul>
+```
+****
+
+## <a name="2-2-8">Cadastrando projetos</a>
+
+```js
+function handleAddProject() {
+    api.post('projects', {
+        title: `Novo projeto ${Date.now()}`,
+        owner: 'Fábio José'
+    });
+}
+```
+
+Agora será necessário atualizar a listagem.
+```js
+async function handleAddProject() {
+     
+    const res = await api.post('projects', {
+        title: `Novo projeto ${Date.now()}`,
+        owner: 'Fábio José'
+    });
+
+    const project = res.data;
+
+    setProjects([...projects, project]);
+
+    }
+```
+
+Será necessário instalar um plugin no babel para que o **async await** funcione:
+
+```console
+yarn add @babel/plugin-transform-runtime -D
+```
+
+E no babel.config.js:
+```js
+module.exports = {
+    presets: [
+        '@babel/preset-env',   //Converte o código de um JS modero para um JS mais antigo, caso necessário;
+        '@babel/preset-react'  //Adiciona funcionalidades do React nessa conversão
+    ],
+    plugins: [
+        '@babel/plugin-transform-runtime'
+    ]
+}
+```
+
+****
 
 [Volte ao indice](#indice)
 
