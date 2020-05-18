@@ -9,6 +9,6 @@
     "uuidv4": "^6.0.8"
   },
   "devDependencies": {
-    "nodemon": "^2.0.3"
+    "nodemon": "^2.0.4"
   }
 }

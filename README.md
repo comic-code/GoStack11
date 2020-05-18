@@ -23,6 +23,11 @@
         - 2-2-8 [Cadastrando projetos](#2-2-8)
 
     - 2-3 - [React Native](#2-3)
+        - 2-3-1 [Arquitetura React Native](#2-3-1)
+        - 2-3-2 [Criando novo projeto](#2-3-2)
+        - 2-3-3 [Diferanças do ReactJS](#2-3-3)
+        - 2-3-4 [Criando novos projetos](#2-3-4)
+
     - 2-4 - [TypeScript](#2-4)
 
 ****
@@ -848,8 +853,141 @@ module.exports = {
 }
 ```
 
-****
-
 [Volte ao indice](#indice)
 
 ****
+
+# <a name="2-3">React Native</a>
+
+## <a name="2-3-1">Arquitetura React Native</a>
+
+### **O que é React Native?**
+
+- Uma versão do React para desenvolvimento mobile;
+- Multiplataforma;
+- Podemons manipular cada plataforma de forma diferente;
+- Interface nativa;
+- Código não é transpilado;
+
+### **Arquitetura**
+
+Como o RN consegue transformar JS em interface nativa?
+- O código JSX passa pelo Metro Bundler, que seria uma espécie de WebPack o resultado é um Bundle que contém todo o código da aplicação, esse código é passado para Bridge que é a ponte de comunicação entre o código JS para o código nativo, depois da da Bridge é transformado em código nativo para IOS, ou para Android.
+
+### **Sintaxe**
+
+- A declaração de componentes é ingual ao web;
+- Não usamos HTML e sim componentes próprios:
+    - View
+    - Text
+- Todo texto é <Text /> não existe estilização própria;
+
+### **O que é Expo?**
+
+- SDK com um conjunto funcionalidades prontas para usar (câmera, vídeo, integrações);
+- Não é necessário configurar emulador;
+
+Por que não será utilizado?
+- Limitação sobre o controle do códugo nativo;
+- Várias bibliotecas não tem suporte para o Expo;
+- O Expo liberou todo o conjunto de ferramentas prontas para serem utilizadas com projetos que não utilizam Expo :)
+
+****
+
+## <a name="2-3-2">Criando novo projeto</a>
+
+```console
+react-native init nomeDoProjeto
+```
+
+Temos:
+
+- Uma pasta de testes
+- Uma pasta Android
+- Uma pasta IOS
+> Nessas duas ultimas ficam os códigos nativos.
+- Node Modules
+- Etc
+
+```js
+import React from 'react';
+import { View } from 'react-native';
+
+export default function App() {
+    return <View />
+}
+```
+****
+
+## <a name="2-3-3">Diferanças do ReactJS</a>
+
+As principais diferenças são:
+
+- Elementos;
+- Estilização; 
+
+### Elementos
+
+Não utilizamos HTML, então temos que utilizar componentes exportados do react-native:
+
+- **View**: Faz papel de container (div, footer, header, main);
+- **Text**: Todo texto (p, span, strong, h1, h2, h3...)
+
+>Os elementos não possuem valor semântico, são utilizado totalmente de forma abstrata.
+
+Elementos não possuem estilização própria.
+
+****
+
+### Estilização
+
+- Para começar temos que importar o StyleSheet
+- Criar um objeto com os estilos;
+- E utilizar no componente desejado;
+
+```js
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function App() {
+    return <View style={styles.container}/>
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#9159C1',
+    }
+});
+```
+
+- Todos os componentes possuem por padrão "display: flex";
+- No React Native possui herança de estilos, logo será necessário colocar um estilo específico para cada tag do elemento;
+
+```js
+export default function App() {
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>Hello Friend</Text>
+        </View>
+
+    )
+}
+```
+
+### Para utilizar o AXIOS:
+
+- IOS com Emulador: localhost
+- IOS com Físico: IP da máquina
+- Android com Emulador:
+    - localhost (adb reverse tcp:3333 tcp:3333)
+    - 10.0.2.2 (Android Studio)
+    - 10.0.3.2 (Genymotion)
+- Android físico: IP da máquina
+
+> Lembrar de usar http://
+
+## <a name="2-3-4">Criando novos projetos</a>
+
+- TouchableOpacity - É um botão que ao ser "clicado diminui sua opacidade".
+
