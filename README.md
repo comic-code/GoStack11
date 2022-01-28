@@ -29,6 +29,8 @@
         - 2-3-4 [Criando novos projetos](#2-3-4)
 
     - 2-4 - [TypeScript](#2-4)
+        - 2-4-1 [Configurando o projeto](#2-4-1)
+        - 2-4-2 [Quando adicionar tipagem?](#2-4-2)
 
 ****
 # <a name="2">Fase 2</a>
@@ -991,3 +993,66 @@ export default function App() {
 
 - TouchableOpacity - É um botão que ao ser "clicado diminui sua opacidade".
 
+****
+
+# <a name="2-4">Typescript</a>
+
+É uma linguagem totalmente baseada em JavaScript, porém ela adiciona tipagem e permite nos acessar as features mais recentes do JS.
+
+## <a name="2-4-1">Configurando o projeto</a>
+
+```console
+yarn add typescript -D
+```
+Como o projeto já em produção irá ser em JS não será necessário ter o typescript.
+
+```
+yarn add -D @types/express
+```
+> Sempre que for instalado um pacote e o autocomplete não estiver disponível seŕa necessário a instalação de um pacote de declaração de tipos:
+
+Novamente é instalado como desenvolvedor já que não será necessário o uso do typescript em produção.
+
+```console
+yarn tsc index.ts
+```
+Irá converter o arquivo ts em arquivo js.
+
+****
+
+Será necessário criar um ts.config:
+```console
+yarn tsc --init
+```
+ 
+Agora com esse arquivo de configuração feito, basta utilizar apenas:
+```console
+yarn tsc
+```
+
+Irá converter todos os arquivos ts.
+> Com isso o node poderá rodar nossa aplicação apartir do arquivo .js
+
+****
+
+Para alterar o caminho dos arquivos "traduzidos", em tsconfig.json:
+
+```json
+"outDir": "./dist"
+```
+
+****
+
+## <a name="2-4-2">Quando adicionar tipagem?</a>
+
+Sempre que será necessário adicionar tipagem o editor irá avisar.
+
+```js
+// importado a tipagem
+import { Request, Response } from 'express'
+
+export default function hellofriend(req: Request, res: Response) {
+    return res.send('Hello Friend');
+}
+```
+****

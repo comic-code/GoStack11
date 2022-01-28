@@ -4,7 +4,7 @@ const { uuid, isUuid } = require('uuidv4');
 
 const app = express();
 
-app.use(cors()); // Irá permitir que qualquer front-end se conecte ao nosso front-end
+app.use(cors()); // Irá permitir que qualquer front-end se conecte ao nosso back-end
 app.use(express.json());
 
 const projects = [];
